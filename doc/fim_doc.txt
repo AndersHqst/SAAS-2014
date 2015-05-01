@@ -1,0 +1,120 @@
+"""
+    ### fpgrowth documentation from fpgrowth.__doc__ ###
+
+fpgrowth (tracts, target='s', supp=10, min=1, max=None, report='a',
+          eval='x', thresh=10, algo='s')
+Find frequent item sets with the fpgrowth algorithm.
+tracts  transaction database to mine (mandatory)
+        The database must be an iterable of transactions;
+        each transaction must be an iterable of items;
+        each item must be a hashable object.
+        If the database is a dictionary, the transactions are
+        the keys, the values their (integer) multiplicities.
+target  type of frequent item sets to find     (default: s)
+        s/a   sets/all   all     frequent item sets
+        c     closed     closed  frequent item sets
+        m     maximal    maximal frequent item sets
+        g     gens       generators
+supp    minimum support of an item set         (default: 10)
+        (positive: percentage, negative: absolute number)
+min     minimum number of items per item set   (default: 1)
+max     maximum number of items per item set   (default: no limit)
+report  values to report with an item set      (default: a)
+        a     absolute item set support (number of transactions)
+        s     relative item set support as a fraction
+        S     relative item set support as a percentage
+        e     value of item set evaluation measure
+        E     value of item set evaluation measure as a percentage
+        =     pattern spectrum as a list (instead of patterns)
+        #     pattern spectrum as a dictionary
+eval    measure for item set evaluation        (default: x)
+        x     none       no measure / zero (default)
+        b     ldratio    binary logarithm of support quotient
+thresh  threshold for evaluation measure       (default: 10%)
+algo    algorithm variant to use               (default: s)
+        s     simple     simple  tree nodes with only link and parent
+        c     complex    complex tree nodes with children and siblings
+        d     single     top-down processing on a single prefix tree
+        t     topdown    top-down processing of the prefix trees
+        Variant d does not support closed/maximal item set mining.
+returns a list of pairs (i.e. tuples with two elements),
+        each consisting of a tuple with a found frequent item set
+        and a tuple listing the values selected with 'report' *or*
+        a list of triplets (size,supp,frq), i.e. a pattern spectrum.
+apriori (tracts, target='s', supp=10, min=1, max=None, report='a',
+         eval='x', agg='x', thresh=10, minimp=None, invbxs=False,
+         prune=None)
+"""
+
+"""
+    ### apriori documentation from apriori.__doc__ ###
+
+apriori (tracts, target='s', supp=10, min=1, max=None, report='a',
+         eval='x', agg='x', thresh=10, minimp=None, invbxs=False,
+         prune=None)
+Find frequent item sets with the apriori algorithm.
+tracts  transaction database to mine (mandatory)
+        The database must be an iterable of transactions;
+        each transaction must be an iterable of items;
+        each item must be a hashable object.
+        If the database is a dictionary, the transactions are
+        the keys, the values their (integer) multiplicities.
+target  type of frequent item sets to find     (default: s)
+        s     sets/all   all     frequent item sets
+        c     closed     closed  frequent item sets
+        m     maximal    maximal frequent item sets
+        g     gens       generators
+supp    minimum support of an item set         (default: 10)
+        (positive: percentage, negative: absolute number)
+min     minimum number of items per item set   (default: 1)
+max     maximum number of items per item set   (default: no limit)
+report  values to report with an item set      (default: a)
+        a     absolute item set support (number of transactions)
+        s     relative item set support as a fraction
+        S     relative item set support as a percentage
+        e     value of item set evaluation measure
+        E     value of item set evaluation measure as a percentage
+        =     pattern spectrum as a list (instead of patterns)
+        #     pattern spectrum as a dictionary
+eval    measure for item set evaluation        (default: x)
+        x     none       no measure / zero (default)
+        b     ldratio    binary logarithm of support quotient       (+)
+        c     conf       rule confidence                            (+)
+        d     confdiff   absolute confidence difference to prior    (+)
+        l     lift       lift value (confidence divided by prior)   (+)
+        a     liftdiff   absolute difference of lift value to 1     (+)
+        q     liftquot   difference of lift quotient to 1           (+)
+        v     cvct       conviction (inverse lift for negated head) (+)
+        e     cvctdiff   absolute difference of conviction to 1     (+)
+        r     cvctquot   difference of conviction quotient to 1     (+)
+        z     cert       certainty factor (relative conf. change)   (+)
+        n     chi2       normalized chi^2 measure                   (+)
+        p     chi2pval   p-value from (unnormalized) chi^2 measure  (-)
+        y     yates      normalized chi^2 with Yates' correction    (+)
+        t     yatespval  p-value from Yates-corrected chi^2 measure (-)
+        i     info       information difference to prior            (+)
+        g     infopval   p-value from G statistic/info. difference  (-)
+        f     fetprob    Fisher's exact test (table probability)    (-)
+        h     fetchi2    Fisher's exact test (chi^2 measure)        (-)
+        m     fetinfo    Fisher's exact test (mutual information)   (-)
+        s     fetsupp    Fisher's exact test (support)              (-)
+        Measures marked with (+) must meet or exceed the threshold,
+        measures marked with (-) must not exceed the threshold
+        in order for the item set to be reported.
+agg     evaluation measure aggregation mode    (default: x)
+        x     none       no aggregation (use first value)
+        m     min        minimum of individual measure values
+        n     max        maximum of individual measure values
+        a     avg        average of individual measure values
+thresh  threshold for evaluation measure       (default: 10%)
+minimp  minimum improvement of eval. measure   (default: no limit)
+invbxs  invalidate eval. below exp. support    (default: False)
+prune   min. size for evaluation filtering     (default: no pruning)
+        = 0   backward filtering       (no subset check)
+        < 0   weak   forward filtering (one subset  must qualify)
+        > 0   strong forward filtering (all subsets must qualify)
+returns a list of pairs (i.e. tuples with two elements),
+        each consisting of a tuple with a found frequent item set
+        and a tuple listing the values selected with 'report' *or*
+        a list of triplets (size,supp,frq), i.e. a pattern spectrum.
+"""

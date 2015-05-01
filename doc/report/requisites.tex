@@ -1,0 +1,21 @@
+\subsection{Entropy}
+
+In order to appreciate the later sections, several concepts should be understood.
+We have condensed the most relevant aspects of these in the following subsections.
+
+\subsection{Entropy}
+% Short introduction
+% Infromation theory
+% R.P. paper
+
+From information theory we use the definition of entropy pertaining to data, as R.P.s paper\cite{rasmus}  and subsequently our method, uses this concept as one of its core ideas. Intuitively the entropy of a dataset can be understood as a value that describes how certain a piece of information is. Entropy is based on the probability of variable values in the set, which corresponds to the number of occurences divided by the amount of measurements. p = \tfrac{\abs{occurences}}{\abs{measurements}} 
+
+The entropy of a variable is found by:
+\begin{equation}
+H = - \sum\limits_{i=1}^n p_{i} * \log (p_{i}) = - \frac{\abs{occurances}^2}{\abs{measurements}} * \log\lpar\frac{\abs{occurances}}{\abs{measurements}}\rfrac 
+$\\ $
+, occurances=0 \implies H=0.
+\end{equation}
+
+In the above fraction, it can be seen that if the probability is either 1 or 0 for any value, the entropy of that value is 0. If we know the entropy of a system, we can set values for variables that will satisfy the known entropy value, according to (TODO - link to equation). This results in an estimate for the values that assumes no correlation in the data. It can therefore be assumed that correlation will be an interesting aspect to look at, when evaluating the merits of the method described in R.P.s paper\cite{rasmus}. 
+

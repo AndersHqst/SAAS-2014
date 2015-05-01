@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.dot {
+  stroke: #000;
+}
+
+</style>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+
+var margin = {top: 50, right: 20, bottom: 30, left: 150},
+    width = 950 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+// var x = d3.scale.linear()
+//     .range([0, width]);
+var x = d3.scale.log()
+    .range([0, width]);
+
+var y = d3.scale.log()
+    .range([height, 0]);
+
+var colorVariableName = "test";
+var sizeVariableName = "test";
+
+
+
+var color = d3.scale.category10();
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom")
+    .tickFormat(function (d){
+      return x.tickFormat(20, d3.format(",d"))(d)
+    });
+
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")    
+    .tickFormat(function (d){
+      return y.tickFormat(20, d3.format(",d"))(d)
+    });
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+d3.tsv("est_all_data_tiny_test.tsv", function(error, data) {
+  data.forEach(function(d) {
+    d.est = +d.est;
+    d.obs = +d.obs;
+    d.colVar = +d[colorVariableName]
+    d.sizeVar = +d[sizeVariableName]
+  });
+
+  x.domain(d3.extent(data, function(d) { return d.est; })).nice();
+  y.domain(d3.extent(data, function(d) { return d.obs; })).nice();
+  x.tickFormat(100, "$,.2f");
+  svg.append("line")
+    .attr("x1", x(10))
+    .attr("y1", y(10))
+    .attr("x2", x(10))
+    .attr("y2", y(10))
+    .transition()
+    .attr("x2", x(30000))
+    .attr("y2", y(30000))
+    .duration(4000)
+    .delay(500)
+    .style("stroke", "rgb(212, 38, 19)");
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+    .append("text")
+      .attr("class", "label")
+      .attr("x", width)
+      .attr("y", -6)
+      .style("text-anchor", "end")
+      .text("est");
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("obs")
+
+  svg.selectAll(".dot")
+      .data(data)
+      .enter().append("circle")
+      .attr("class", "dot")
+      .attr("r", 0)
+      .style("stroke-width", "0")
+      .style("opacity", "0.75")
+      .style("fill", "black")
+      .transition().attr("r", function(d) { return Math.round(d.sizeVar*5); })
+      .duration(1000)
+      .delay(500)
+      .attr("cx", function(d) { return x(d.est); })
+      .attr("cy", function(d) { return y(d.obs); })
+      .transition().style("fill", function(d) {return "hsl(0, 80%, " + d.colVar*90 + "%)"})
+      .duration(1000)
+      .delay(1500);
+
+
+  var legend = svg.selectAll(".legend")
+      .data(color.domain())
+    .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+  legend.append("rect")
+      .attr("x", width - 18)
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", color);
+
+  legend.append("text")
+      .attr("x", width - 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d; });
+
+});
+
+</script>

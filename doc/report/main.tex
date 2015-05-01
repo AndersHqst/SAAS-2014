@@ -1,0 +1,158 @@
+% THIS IS SIGPROC-SP.TEX - VERSION 3.1
+% WORKS WITH V3.2SP OF ACM_PROC_ARTICLE-SP.CLS
+
+\documentclass{acm_proc_article-sp}
+
+\usepackage{enumitem}
+
+
+\begin{document}
+
+\title{Title}
+\subtitle{IT University of Copenhagen -- 2014}
+
+\numberofauthors{4}
+\author{
+\alignauthor
+Keyla Berti Lange\\
+\email{keyb@itu.dk}
+\alignauthor
+Esben Kramer\\
+\email{eplk@itu.dk}
+\and
+\alignauthor
+Anders H{\o}st Kj{\ae}rgaard\\
+\email{ahkj@itu.dk}
+\alignauthor
+Jonas Busk\\
+\email{jonb@itu.dk}
+}
+
+\maketitle
+
+\begin{abstract}
+\end{abstract}
+
+\section{Introduction}
+% Introduction / problem description / motivation
+% Recommender systems (motivation)
+% Proposed entropy based approach
+% Work with Apptus
+
+In this project we study the problem of finding association rules via an entropy based method, proposed in \cite{rasmus}. In particular we are interested in triples of items, i.e. given the items $A$ and $B$, what is the best estimate of the probability of $C$, given we know the individual probabilities and pairwise probabilities of items. 
+
+This has a wide range of applications, including recommender systems and query completion. 
+
+\section{Related work}
+% Methods of recommender systems
+% Machine Learning?
+
+Recommender systems and extraction of association rules are well studied problems. 
+
+As far as we know, an entropy based method has not been proposed for association rule mining before. 
+
+\section{Overview of the method}
+% Entropy based method
+% 1. sampling
+% 2. frequent itemset mining
+% 3. find triples
+% 4. estimate frequency/probability
+% 5. compare with observed frequency/probability
+
+The procedure that is used to verify and investigate the maximum entropy estimate, can be sketched as follows:
+
+\begin{enumerate}[noitemsep, nolistsep]
+  \item Division of data into test and training data. 
+  \item Counting appearance of itemsets (with size less or equal three) in both the training and test data with fp-growth.
+  \item From the training data, all  itemsets of size two, pairs, are used to make a graph . For each triangle in that graph the maxent estimate are calculated. 
+  \item The final step is a comparison of the estimate on a triple with the occurrence in the test data. 
+\end{enumerate}
+
+The steps will be explained further in the following sections.
+
+\section{Prerequisites}
+
+In order to appreciate the later sections, several concepts should be understood.
+We have condensed the most relevant aspects of these in the following subsections.
+
+\subsection{Entropy}
+% Short introduction
+% Infromation theory
+% R.P. paper
+
+From information theory we use the definition of entropy pertaining to data, as R.P.s paper and subsequently our method, uses this concept as one of its core ideas. Intuitively the entropy of a dataset can be understood as a value that describes how certain a piece of information is. Entropy is based on the probability of variable values in the set, which corresponds to the number of occurrences divided by the amount of measurements. $p = \tfrac{\abs{occurrences}}{\abs{measurements}}$ 
+
+The entropy of a variable is found by:
+\begin{equation}
+H = - \sum\limits_{i=1}^n p_{i} * \log (p_{i}) = - \frac{\abs{occurrences}^2}{\abs{measurements}} * \log(\frac{\abs{occurrences}}{\abs{measurements}}) 
+$\\ $
+, occurrences=0 \implies H=0.
+\end{equation}
+
+In the above fraction, it can be seen that if the probability is either 1 or 0 for any value, the entropy of that value is 0. 
+
+\section{Frequent itemset mining}
+% Several approaches for mining frequent itemsets have been proposed.
+
+In order to locate interesting examples in the transaction data, we need to count occurrences of singletons, pairs and triples of items in the dataset. For that purpose we exploit methods of frequent itemset mining. The two prevalent algorithms for finding frequent itemsets are \emph{Apriori} and \emph{FP-growth} \cite{datamining}.
+
+% apriori
+Apriori employs an iterative approach where itemsets of size $k$ are used to explore itemsets of size $k+1$. The algorithm exploits the important property, that \emph{all nonempty subsets of a frequent itemset must also be frequent}. This is also known as the \emph{Apriori property}. First the set of frequent 1-itemsets are found by scanning the database and collecting those items that satisfy the minimum support. Then those items are used to generate candidate itemsets of size 2, which are counted during another full scan of the database. The algorithm proceeds iteratively to find itemsets of size $k+1$. Since the set of candidates found in each iteration may be huge, the Apriori property is used to prune away candidates that can not be frequent by ensuring that every subset of a candidate is also a frequent itemset.
+
+% fp-growth
+Another, significantly different, approach for mining frequent itemsets is \emph{frequent pattern growth}, or FP-growth. This algorithm adopts a \emph{divide-and-conquer} strategy by compressing the database into a \emph{frequent pattern tree}, which retains the itemset associations, and divide the tree into conditional subtrees which are then mined separately. This approach completely avoids expensive candidate generation and has proven to be efficient and scalable for mining both long and short patterns. 
+
+%(ref? rephrased: '.. generation and is much more space efficient, and know to be faster than Apriori [ref]')
+
+
+% Recognized, fast implementations by Christian Borgelt.
+% fp-growth is assumed faster on large datasets[datamining], and is more space efficient [Brogelt] 
+For the purpose of this project, we have used efficient implementations of the two algorithms by Christian Borgelt\footnote{Website: http://www.borgelt.net/}, which have enabled us to perform frequent itemset mining on large datasets. In particular we have searched for itemsets with amaximum size of 3, and minimum support of 30 in the test data (rephrase this, describe set up and result compared to Pagh]. 
+% TODO: check numbers
+
+\section{Finding interresting triples}
+
+% TODO: merge this
+We have found, that finding interesting triples, i.e. triples of items where all individual and pairwise probabilities are known, can be reduced to the well studied problem of finding triangles in a graph. For this purpose we have adapted fast algorithms and data structures, enabling us to work on data an order of magnitude larger than the original implementation of \cite{rasmus}.
+
+Fp-growth outputs a set $S$, where an element subset $s_i \in S$ is a frequent itemssets of size 1 to 3, along its frequency. For our estimation experiments we want to find subsets ${a,b,c \subset S}$ s.t. all pairs ${a,b \in S, a,c \in S, b,c in \in S}$ which we will refer to as {\it interesting triples} when $(a,b,c) \notin S$. And in general a {\it triple}, when $(a,b,c) \in S$ or irrelevant. We can reduce the problem of finding triples in $S$, to finding triangles in a graph. (Should we prove this, or give an example?) Werther and ???? provide a good experimental overview of the most common algorithms for finding triangles in graphs.Following their results, the practiacal running time of these algorithms vary depending on the density of the graph[ref] (Maybe move this below, derive that we use Forward because the had good results for graphs that may be similar ours. The complexity follows. (Or, we can be no faster than) 
+Lemma: Let $G$ be a complete graph with $n$ nodes. Then, $G$ has $n \in 2=n^3$ triangles, and thus a worst case lower bound for finding triangles in $G$. 
+In practice, however, we often expect $G$ to have an edge-degree of $sqrt(n)$ and we expect the running time to be ???? [Werther]
+Following the practical result in [Werther] we use Forward in our implementation. We asser that the ??? data in Werter resembles the transaction data that we aim for. Running node-iterator, forward, forward edge-hashed, yields the results listed in table ??? that turned out the be very similar to those in Weter. 
+Data structures for triangles. The set of trianlges we find can be arbitrarily large, depending on the run parameters. We therefore store riangles in a null-rooted tree data structure, as dipicted in Figure \fig{fig:tree_ds_for_triangles}. This way we save space every time pairs reoccur as the lexicographically ordered element of a triple.
+
+% Finding triples can be reduced to the well studied problem of finding triangles in a graph.
+% edge iterator hashed
+% node iterator
+% forward
+% our implementation/adaption (lookup tables, running time)
+
+\section{Experiments and results}
+% Apptus
+% Different datasets
+% Different settings/configurations of the method (thresholds)
+
+We are working together with a Swedish company to test our method on their shopping cart data from real life online commerce systems. 
+
+\section{Conclusion}
+\section{Acknowledgments}
+
+% The following two commands are all you need in the
+% initial runs of your .tex file to
+% produce the bibliography for the citations in your paper.
+\bibliographystyle{abbrv}
+\bibliography{main}  % sigproc.bib is the name of the Bibliography in this case
+% You must have a proper ".bib" file
+%  and remember to run:
+% latex bibtex latex latex
+% to resolve all references
+
+%\balancecolumns
+
+\appendix
+
+\section{Appendix A}
+
+\balancecolumns
+
+\end{document}
